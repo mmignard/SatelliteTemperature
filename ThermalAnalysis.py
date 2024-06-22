@@ -3,6 +3,9 @@
 Created on Fri Apr 28 09:26:18 2023
 
 @author: MarcMignard
+ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρσςτυφχψωάέήϊίόύϋώΆΈΉΊΌΎΏ±≥≤ΪΫ÷≈°√ⁿ²
+
+equations from https://tfaws.nasa.gov/wp-content/uploads/On-Orbit_Thermal_Environments_TFAWS_2014.pdf
 """
 
 import numpy as np
@@ -174,6 +177,7 @@ def perpFormFactor(heightOrbit):
     The shape of earth projected onto a vertical (perpendicular) surface in orbit.
     Used only for albedo reflection of the sun off the earth.
     uses global value radiusEarth
+    from page 49 of https://tfaws.nasa.gov/wp-content/uploads/On-Orbit_Thermal_Environments_TFAWS_2014.pdf
     '''
     radical = np.sqrt(1-(radiusEarth/(radiusEarth+heightOrbit))**2)
     retVal = 1/(2*np.pi)*(np.pi - 2*np.arcsin(radical) - np.sin(2*np.arcsin(radical)))
@@ -280,3 +284,40 @@ def orbitalPeriod(a,G=6.674e-11,M=5.972168e24 ):
     '''
     return 2*np.pi*np.sqrt(a**3/G/M)
 
+def totalFlux(heightOrbit,theta,beta,areas,emL,emS):
+    '''
+    Calculate the temperature of a satellite.
+    Parameters
+    ----------
+    heightOrbit : float
+        Height of satellite orbit above the earth in meters.
+    theta : numpy array
+        Position in degrees of satellite in its orbit.
+        0 is directly between sun and earth.
+        Varies from 0-360
+    beta : float
+        Angle in degrees between sun plane and orbit plane.
+        Varies from -90 to +90, negative is south of sun, positive is north of sun.
+    areas : numpy array
+        area each of the 6 sides of the satellite in m^2. Must be in same order
+        as the definition for 'sides' below
+    emL : float
+        long wavelength emissivity (between 0 & 1)
+    emS : float
+        short wavelength emissivity (or absorptivity, between 0 & 1)
+    Note: emL & emS are currently single numbers. Should make these arrays so 
+        the different sides of the satellite can have different emissivities.
+
+    Returns
+    -------
+    satTemp : numpy array of the temperatures (in °C) at each theta angle
+    '''
+    
+    sides = ['zenith','nadir','forward','aft','north','south']
+    incidentFlux = np.zeros(theta.shape)
+    for s in range(len(sides)):
+        side = sides[s]
+        incidentFlux = incidentFlux + emS*areas[s]*sunFlux(heightOrbit,theta,beta,side) + \
+            emS*areas[s]*earthAlbedoFlux(heightOrbit,theta,beta,side) + \
+            emL*areas[s]*earthGlowFlux(heightOrbit,side)*np.ones(theta.shape)
+    return incidentFlux
