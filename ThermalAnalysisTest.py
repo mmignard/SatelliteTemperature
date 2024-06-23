@@ -87,7 +87,7 @@ areas = np.array([widthSat*lengthSat,    #zenith
                   lengthSat*heightSat,  #north
                   lengthSat*heightSat]) #south
 plt.figure(figsize=(5,3.5),dpi=150)
-plt.suptitle('Total incident heat flux for 6U cubesat size')
+plt.suptitle('Total incident heat flux for 6U cubesat size (ε=1)')
 for beta in [0,60,75]:
     incidentFlux = np.zeros(theta.shape)
     for s in range(len(sides)):
@@ -100,7 +100,7 @@ plt.grid(True)
 plt.xlabel('orbit angle, theta (deg)')
 plt.ylabel('Incident flux (watts)')
 plt.xlim([0,360])
-#plt.ylim([0,1400])
+plt.ylim([0,140])
 plt.legend()
 #plt.savefig('./media/satelliteHeatFlux.svg', bbox_inches='tight')
 plt.show

@@ -51,7 +51,11 @@ The image below shows the time-dependent temperature of a satellite. The lines l
 
 ## Multilayer insulation
 
-Multilayer insulation (MLI) is commonly used on spacecraft. Let's derive an expression for the temperature inside an enclosure completely wrapped. Assume the MLI is composed of two identical films with emissivity ε. Below is a diagram showing the energy balance.
+Multilayer insulation (MLI) is commonly used on spacecraft. Below is an photo of the Mars Reconnaisance Orbiter showing its MLI (from [https://en.wikipedia.org/wiki/File:Mars_Reconnaissance_Orbiter_fully_assembled.jpg]())
+
+![](./media/220px-Mars_Reconnaissance_Orbiter_fully_assembled.jpg)
+
+Let's derive an expression for the temperature inside an enclosure completely wrapped. Assume the MLI is composed of two identical films with emissivity ε. Below is a diagram showing the energy balance.
 
 ![](./media/MLI_diagram.svg)
 
@@ -93,8 +97,6 @@ $${T_N}^4 = \frac {Q_{in} + N Q_{out}}{(N+1) C}$$
 
 $$T_N \approx \sqrt[4]{\frac {Q_{out}}{ε k_{sb} A}}$$
 
-The units of $\dot Q_{in}$ and $\dot Q_{out}$ are W, and the units of C are W/K^4. A 6U satellite with 0.244m^ area dissipating 50W that is wrapped in MLI will be about -14°C when it is in either full sun or it is in eclipse. Below is an photo of the Mars Reconnaisance Orbiter showing its MLI (from [https://en.wikipedia.org/wiki/File:Mars_Reconnaissance_Orbiter_fully_assembled.jpg]())
-
-![](./media/220px-Mars_Reconnaissance_Orbiter_fully_assembled.jpg)
+The units of $\dot Q_{in}$ and $\dot Q_{out}$ are W, and the units of C are W/K^4. A 6U satellite with 0.244m^ area dissipating 50W that is wrapped in MLI will be about -14°C when it is in either full sun or it is in eclipse. 
 
 
