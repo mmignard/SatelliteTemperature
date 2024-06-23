@@ -2,7 +2,7 @@
 
 ## Equations of heat flux impinging on a satellite in low earth orbit
 
-Much of the Python code here is adapted from [Rickman, NASA 2014](https://tfaws.nasa.gov/wp-content/uploads/On-Orbit_Thermal_Environments_TFAWS_2014.pdf). The file [ThermalAnalysis.py](https://github.com/mmignard/SatelliteTemperature/blob/main/ThermalAnalysis.py) contains the working functions. File [EquationVerification.py](https://github.com/mmignard/SatelliteTemperature/blob/main/EquationVerification.py) duplicates several of the graphs in the Rickman presentation. For instance, compare the graph below to the graphs on page 131 and 132 of the presentation. The file [ThermalAnalysisTest.py](https://github.com/mmignard/SatelliteTemperature/blob/main/ThermalAnalysisTest.py) was used to generate the plot shown in this readme.
+Much of the Python code here is adapted from [Rickman, NASA 2014](https://tfaws.nasa.gov/wp-content/uploads/On-Orbit_Thermal_Environments_TFAWS_2014.pdf). The file [ThermalAnalysis.py](https://github.com/mmignard/SatelliteTemperature/blob/main/ThermalAnalysis.py) contains the working functions. File [EquationVerification.py](https://github.com/mmignard/SatelliteTemperature/blob/main/EquationVerification.py) duplicates several of the graphs in the Rickman presentation. For instance, compare the graph below to the graphs on page 131 and 132 of the presentation. The file [ThermalAnalysisTest.py](https://github.com/mmignard/SatelliteTemperature/blob/main/ThermalAnalysisTest.py) was used to generate the other plots shown in this readme.
 
 ![](./media/nadirFlux.svg)
 
@@ -26,7 +26,7 @@ Multiplying the area of each side of a satellite by the heat flux for that side,
 
 ![](./media/satelliteHeatFlux.svg)
 
-To estimate the temperature of the satellite we can write a heat flux balance equation: $\dot Q_{out} = \dot Q_{in} + P_{gen}$. The graph above gives the value for $\dot Q_{in}$. The power generated locally by electronics is $P_{gen}$, and the only outlet for heat in orbit is through radiation, so $\dot Q_{out} = &epsilon; k_{sb} AT^4$ where $&epsilon;$ is the emissivity, $k_{sb}$ is the Stephan-Boltzman constant, A is the area of the satellite, and T is the temperature. I ignore the small heat flux due to the background temperature of space at 3K since it is microwatts. To get temperature, solve for T in $&epsilon; k_{sb} AT^4 = \dot Q_{in} + P_{gen}$. The result is shown in the figure below.
+To estimate the temperature of the satellite we can write a heat flux balance equation: $\dot Q_{out} = \dot Q_{in} + P_{gen}$. The graph above gives the value for $\dot Q_{in}$. The power generated locally by electronics is $P_{gen}$, and the only outlet for heat in orbit is through radiation, so $\dot Q_{out} = &epsilon; k_{sb} AT^4$ where $&epsilon;$ is the emissivity, $k_{sb}$ is the Stephan-Boltzman constant, A is the surface area of the satellite, and T is the temperature. I ignore the small heat flux due to the background temperature of space at 3K since it is microwatts. To get temperature, solve for T in $&epsilon; k_{sb} AT^4 = \dot Q_{in} + P_{gen}$. The result is shown in the figure below.
 
 ![](./media/satelliteTemperature01.svg)
 
@@ -50,5 +50,51 @@ The image below shows the time-dependent temperature of a satellite. The lines l
 ![](./media/satTimeTemp.svg)
 
 ## Multilayer insulation
+
+Multilayer insulation (MLI) is commonly used on spacecraft. Let's derive an expression for the temperature inside an enclosure completely wrapped. Assume the MLI is composed of two identical films with emissivity ε. Below is a diagram showing the energy balance.
+
+![](./media/MLI_diagram.svg)
+
+For the upper layer (facing the environment), there is a net flux of heat coming from something like the sun, $\dot Q_{in}$. For the lower film (facing inside toward the enclosure), there is a net flux of heat from the electronics inside the enclosure $\dot Q_{in}$. The following two equations describe this situation:
+
+$$\dot Q_{in} + C {T_N}^4 = 2 C {T_0}^4$$
+
+$$\dot Q_{out} + C {T_0}^4 = 2 C {T_N}^4$$
+
+Where $C = ε k_{sb} A$. The solutions for this are fairly easy to determine:
+
+$${T_0}^4 = \frac {2 Q_{in} + Q_{out}}{3 C}$$
+
+$${T_N}^4 = \frac {Q_{in} + 2 Q_{out}}{3 C}$$
+
+What if we have many films N, N-1, N-2, ... 0? It is harder to solve N equations in N unknowns by hand. For instance, with four films, the equations are:
+
+$$\dot Q_{in} + C {T_1}^4 = 2 C {T_0}^4$$
+
+$$C {T_0}^4 + C {T_2}^4 = 2 C {T_1}^4$$
+
+$$C {T_1}^4 + C {T_N}^4 = 2 C {T_2}^4$$
+
+$$\dot Q_{out} + C {T_2}^4 = 2 C {T_N}^4$$
+
+Using sympy (symbolic python) as shown in file [ThermalAnalysisTest.py](https://github.com/mmignard/SatelliteTemperature/blob/main/ThermalAnalysisTest.py), the solutions are:
+
+$${T_0}^4 = \frac {4 Q_{in} + Q_{out}}{5 C}$$
+
+$${T_1}^4 = \frac {3 Q_{in} + 2 Q_{out}}{5 C}$$
+
+$${T_2}^4 = \frac {2 Q_{in} + 3 Q_{out}}{5 C}$$
+
+$${T_N}^4 = \frac {Q_{in} + 4 Q_{out}}{5 C}$$
+
+The only temperature we care about is the last one near the enclosure, and for $T_N$ when N is large, then
+
+$${T_N}^4 = \frac {Q_{in} + N Q_{out}}{(N+1) C}$$
+
+$$T_N \approx \sqrt[4]{\frac {Q_{out}}{C}}$$
+
+The units of $\dot Q_{in}$ and $\dot Q_{out}$ are W, and the units of $C = ε k_{sb} A$ are W/K^4. A 6U satellite with 0.244m^ area dissipating 50W that is wrapped in MLI will be about -14°C when it is in either full sun or it is in eclipse. Below is an photo of the Mars Reconnaisance Orbiter showing its MLI (from [https://en.wikipedia.org/wiki/File:Mars_Reconnaissance_Orbiter_fully_assembled.jpg]())
+
+![](./media/220px-Mars_Reconnaissance_Orbiter_fully_assembled.jpg)
 
 

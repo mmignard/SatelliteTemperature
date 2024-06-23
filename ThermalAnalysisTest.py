@@ -180,4 +180,94 @@ plt.legend()
 #plt.savefig('./media/satTimeTemp.svg', bbox_inches='tight')
 plt.show 
 
-   
+
+##########################################################################
+###    Draw diagrams for multilayer insulation
+###    
+##########################################################################
+
+plt.figure(figsize=(5,3.5),dpi=150)
+plt.title('Energy balance for multilayer insulation')
+plt.xlim([0,1])
+plt.ylim([-2,0.75])
+plt.xticks([])  
+plt.yticks([])  
+#--------------------------------------------
+y = 0
+plt.plot([0,1],[y,y],'k')
+plt.annotate('', xy=(0.3,y), xytext=(0.3,y+0.5), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.3,0.25,'$\\dot Q_{in}$', fontsize=8)
+
+plt.annotate('', xy=(0.7,y+0.5), xytext=(0.7,y), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.7,y+0.25,'$ε k_{sb} A {T_0}^4$', fontsize=8)
+
+plt.annotate('', xy=(0.7,y-0.5), xytext=(0.7,y), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.7,y-0.25,'$ε k_{sb} A {T_0}^4$', fontsize=8)
+
+plt.annotate('', xy=(0.3,y), xytext=(0.3,y-0.5), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.3,y-0.25,'$ε k_{sb} A {T_N}^4$', fontsize=8)
+plt.text(0.9,y+0.02,'film 0', fontsize=8)
+#--------------------------------------------
+y = -1.25
+plt.plot([0,1],[y,y],'k')
+plt.annotate('', xy=(0.3,y+0.5), xytext=(0.3,y), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.3,y+0.25,'$ε k_{sb} A {T_N}^4$', fontsize=8)
+
+plt.annotate('', xy=(0.7,y), xytext=(0.7,y+0.5), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.7,y+0.25,'$ε k_{sb} A {T_0}^4$', fontsize=8)
+
+plt.annotate('', xy=(0.7,y), xytext=(0.7,y-0.5), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.7,y-0.25,'$\\dot Q_{out}$', fontsize=8)
+
+plt.annotate('', xy=(0.3,y-0.5), xytext=(0.3,y), arrowprops=dict(facecolor='black', width=0.5,headwidth=5, headlength=8), fontsize=8)
+plt.text(0.3,y-0.25,'$ε k_{sb} A {T_N}^4$', fontsize=8)
+plt.text(0.9,y+0.02,'film N', fontsize=8)
+
+#--------------------------------------------
+plt.text(0.45,y-0.55,'enclosure', fontsize=8)
+
+plt.savefig('./media/MLI_diagram.svg', bbox_inches='tight')
+plt.show 
+
+##########################################################################
+###    Derive expression for multilayer insulation
+###    
+##########################################################################
+ 
+import sympy as sym #needs pip install sympy
+
+#For two thin parallel layers:
+#Ttop is temperature of sun-side layer, t2 is temperature of electronics-side layer
+#qDotTop is sun-side heat flux in W/m^2
+#qDotBot is electronics-side heat flux in W/m^2
+#C is coupling from one layer to the other in W/(m^2ˑK^4)
+#layer arrangement: qDotTop | Ttop | Tbot | qDotBot
+Ttop,Tbot = sym.symbols('Ttop,Tbot')
+C,qDotTop,qDotBot = sym.symbols('C,qDotTop,qDotBot')
+eq1 = sym.Eq(C*Tbot + qDotTop, 2*C*Ttop)
+eq2 = sym.Eq(C*Ttop + qDotBot, 2*C*Tbot)
+result = sym.solve([eq1,eq2],(Ttop,Tbot))
+print('Two layers:'); print(result);
+
+#For three thin parallel layers:
+#layer arrangement: qDotTop | Ttop | t2 | Tbot | qDotBot
+Ttop,t2,Tbot = sym.symbols('Ttop,t2,Tbot')
+C,qDotTop,qDotBot = sym.symbols('C,qDotTop,qDotBot')
+eq1 = sym.Eq(C*t2 + qDotTop, 2*C*Ttop)
+eq2 = sym.Eq(C*Ttop + C*Tbot, 2*C*t2)
+eq3 = sym.Eq(C*t2 + qDotBot, 2*C*Tbot)
+result = sym.solve([eq1,eq2,eq3],(Ttop,t2,Tbot))
+print('Three layers:'); print(result);
+
+#For four thin parallel layers:
+#layer arrangement: qDotTop | Ttop | t2 | t3 | Tbot | qDotBot
+Ttop,t2,t3,Tbot = sym.symbols('Ttop,t2,t3,Tbot')
+C,qDotTop,qDotBot = sym.symbols('C,qDotTop,qDotBot')
+eq1 = sym.Eq(C*t2 + qDotTop, 2*C*Ttop)
+eq2 = sym.Eq(C*Ttop + C*t3, 2*C*t2)
+eq3 = sym.Eq(C*t2 + C*Tbot, 2*C*t3)
+eq4 = sym.Eq(C*t3 + qDotBot, 2*C*Tbot)
+result = sym.solve([eq1,eq2,eq3,eq4],(Ttop,t2,t3,Tbot))
+print('Four layers:'); print(result);
+
+print(f'for 6U satellite with A={totalArea:.3f}m^2, T={np.power(50/(emL*totalArea*ta.ksb),0.25)-273.15:.2f}')
