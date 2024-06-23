@@ -20,9 +20,9 @@ When light hits an object, the light will be reflected, transmitted, or absorbed
 
 [Kirchhoff's Law of thermal radiation](https://en.wikipedia.org/wiki/Kirchhoff%27s_law_of_thermal_radiation) states that the emissivity (ε) of an object (its ability to emit light) is equal to its absorptivity. So, ε = A = 1-R. But remember that R is wavelength dependant. Some people like to distinguish short wave absorptivity (α) from long wave emissivity (ε). I rather dislike that because they are the exact same thing. Kirchhoff's Law makes intuitive sense. If the absorbed and emitted light is different, then there is a net heat flow and the temperature of the object will change until it eventually settles into a steady state where absorbed and emitted light are equal.
 
-Black anodized aluminum is about the hottest object you will ever find laying out in the sun because it absorbs all the visible light from the sun. But because aluminum is reflective in thermal infrared, it cannot emit that heat so it gets very hot. Teflon is the opposite. It reflects most visible light (it is white), but Teflon absorbs much of the thermal infrared, so it is a reasonably good emitter at temperatures we normally encounter on Earth. see table 5.1 on page 62 of [Small Satellite Thermal Modeling Guide](https://apps.dtic.mil/sti/pdfs/AD1170386.pdf) for examples of $&alpha;$ and $&epsilon;$
+Black anodized aluminum is about the hottest object you will ever find laying out in the sun because it absorbs all the visible light from the sun. But because aluminum is reflective in thermal infrared, it cannot emit that heat so it gets very hot. Teflon is the opposite. It reflects most visible light (it is white), but Teflon absorbs much of the thermal infrared, so it is a reasonably good emitter at temperatures we normally encounter on Earth. See table 5.1 on page 62 of [Small Satellite Thermal Modeling Guide](https://apps.dtic.mil/sti/pdfs/AD1170386.pdf) for examples of $&alpha;$ and $&epsilon;$
 
-Multiplying the area of each side of a satellite by the heat flux for that side, then summing the results over all six sides of a retangular satellite (in this example a 6U cubesat size), we get the total heat flux incident on the satellite. The results are shown below for several β angles (β is the inclination of the satellite orbit plane with respect to the sun). I've made some assumptions that the satellite has its narrow ended pointing in the zenith direction, and the long skinny side is forward (in the direction of travel).
+Multiplying the area of each side of a satellite by the heat flux for that side, then summing the results over all six sides of a rectangular satellite (in this example a 6U cubesat size), we get the total heat flux incident on the satellite. The results are shown below for several β angles (β is the inclination of the satellite orbit plane with respect to the sun). I've made some assumptions that the satellite has its narrow ended pointing to the Earth, and the long skinny side is forward (in the direction of travel).
 
 ![](./media/satelliteHeatFlux.svg)
 
@@ -38,7 +38,7 @@ $$T = \frac{1}{&rho; V C_p}\int{\big(\dot Q_{in} + P_{gen} - ε_L k_{sb} A T^4 \
 where $&rho;$ = density, $C_p$ = specific heat capacity (J/(m^3ˑK)), V = volume, A = surface area, $k_{sb}$ = Stefan-Boltzmann constant (W/(m^2ˑK^4)), and $P_{gen}$ is the power generated locally in the satellite
 
 The value of 'T' is what we want to solve for, and it appears on both sides of the equation. Just assume an initial value of T for the first iteration, and after a few steps of plugging the calculated value of T back into $T^4$ it rapidly converges.<br>
-This simulation uses values of $C_p = 230J/(kgˑK)$, $\rho = 0.7g/cm^3$, which assumes a 1/4 the volume is aluminum, and the rest is vacuum.<br>
+This simulation uses values of $C_p = 230J/(kgˑK)$, $\rho = 0.7g/cm^3$, which assumes that 1/4 the volume is aluminum, and the rest is vacuum.<br>
 
 Some tables of specific heat for various materials are here:<br>
 - [Engineering Toolbox](https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
@@ -91,9 +91,9 @@ The only temperature we care about is the last one near the enclosure, and for $
 
 $${T_N}^4 = \frac {Q_{in} + N Q_{out}}{(N+1) C}$$
 
-$$T_N \approx \sqrt[4]{\frac {Q_{out}}{C}}$$
+$$T_N \approx \sqrt[4]{\frac {Q_{out}}{ε k_{sb} A}}$$
 
-The units of $\dot Q_{in}$ and $\dot Q_{out}$ are W, and the units of $C = ε k_{sb} A$ are W/K^4. A 6U satellite with 0.244m^ area dissipating 50W that is wrapped in MLI will be about -14°C when it is in either full sun or it is in eclipse. Below is an photo of the Mars Reconnaisance Orbiter showing its MLI (from [https://en.wikipedia.org/wiki/File:Mars_Reconnaissance_Orbiter_fully_assembled.jpg]())
+The units of $\dot Q_{in}$ and $\dot Q_{out}$ are W, and the units of C are W/K^4. A 6U satellite with 0.244m^ area dissipating 50W that is wrapped in MLI will be about -14°C when it is in either full sun or it is in eclipse. Below is an photo of the Mars Reconnaisance Orbiter showing its MLI (from [https://en.wikipedia.org/wiki/File:Mars_Reconnaissance_Orbiter_fully_assembled.jpg]())
 
 ![](./media/220px-Mars_Reconnaissance_Orbiter_fully_assembled.jpg)
 
